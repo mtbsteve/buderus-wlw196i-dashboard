@@ -111,3 +111,7 @@ docs/anlage.jpg                Screenshot
 - **Geänderte SVG-Dateien:** Erhöhe die Version in den Bild-URLs (`schema.svg?v=4` → `?v=5`), damit der Browser-Cache die neue Datei lädt.
 - **Andere Anlage:** Bei einem anderen Aufbau, etwa ohne Mischerkreis oder mit Reihenpuffer, passt du `schema.svg` und die Pfade in den `flow-*.svg` an. Die Overlays verwenden dieselben Koordinaten wie das Schema.
 - **Bewusst weggelassen:** Die Ansicht „Einstellungen“ enthält keine Reset-, Shutdown-, Schornsteinfeger- und manuelle Abtau-Schalter.
+
+## Lizenz
+
+[MIT](LICENSE)
