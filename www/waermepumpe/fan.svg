@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+ <style>.fill{fill:#ffffff}.blade{fill:#8f98a4}.hub{fill:#3a3f47}
+  @media (prefers-color-scheme: dark){.fill{fill:#2a2f37}.blade{fill:#6f7884}.hub{fill:#c3c9d2}}</style>
+ <circle cx="120" cy="120" r="112" class="fill"/>
+ <g class="blade">
+  <ellipse cx="172" cy="120" rx="50" ry="19"/>
+  <ellipse cx="172" cy="120" rx="50" ry="19" transform="rotate(90 120 120)"/>
+  <ellipse cx="172" cy="120" rx="50" ry="19" transform="rotate(180 120 120)"/>
+  <ellipse cx="172" cy="120" rx="50" ry="19" transform="rotate(270 120 120)"/>
+  <animateTransform attributeName="transform" type="rotate" from="0 120 120" to="360 120 120" dur="1.4s" repeatCount="indefinite"/>
+ </g>
+ <circle cx="120" cy="120" r="16" class="hub"/>
+</svg>

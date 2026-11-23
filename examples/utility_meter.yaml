@@ -1,0 +1,31 @@
+# Tageszähler für Strom und Wärme der Wärmepumpe.
+# Das Dashboard und die Kennzahlen in packages/waermepumpe.yaml erwarten diese
+# Sensoren. Im Original sind sie als UI-Helfer angelegt
+# (Einstellungen → Geräte & Dienste → Helfer → Verbrauchszähler, Zyklus „täglich“).
+# Wer sie lieber in YAML pflegt, kann diese Datei als Package einbinden.
+#
+# Hinweis: Der Stromzähler heißt im Original sensor.wpconstotal24_2.
+# Mit dieser Datei entsteht sensor.wpconstotal24. Dann im Dashboard und in
+# packages/waermepumpe.yaml „wpconstotal24_2“ durch „wpconstotal24“ ersetzen.
+
+utility_meter:
+  wpconstotal24:
+    name: wpconstotal24
+    source: sensor.boiler_nrgconstotal
+    cycle: daily
+  wpconsww24:
+    name: wpconsww24
+    source: sensor.boiler_nrgconscompww
+    cycle: daily
+  wpsupptotal24:
+    name: wpsupptotal24
+    source: sensor.boiler_nrgsupptotal
+    cycle: daily
+  wpsuppheating24:
+    name: wpsuppheating24
+    source: sensor.boiler_nrgsuppheating
+    cycle: daily
+  wpsuppww24:
+    name: wpsuppww24
+    source: sensor.boiler_nrgsuppww
+    cycle: daily

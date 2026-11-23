@@ -1,0 +1,93 @@
+# Wärmepumpe – berechnete Kennzahlen für das Dashboard "Wärmepumpe"
+# Quellen: EMS-ESP (sensor.boiler_*) und die Utility-Meter wp*24 (Tageszähler)
+
+template:
+  - sensor:
+      - name: "WP Betriebszustand"
+        unique_id: wp_betriebszustand
+        default_entity_id: sensor.wp_betriebszustand
+        icon: >
+          {% set a = states('sensor.boiler_hpactivity') %}
+          {{ {'heating':'mdi:radiator','cooling':'mdi:snowflake','hot water':'mdi:water-boiler',
+              'pool':'mdi:pool','defrost':'mdi:snowflake-melt','compressor alarm':'mdi:alert'}.get(a, 'mdi:heat-pump-outline') }}
+        state: >
+          {% set a = states('sensor.boiler_hpactivity') %}
+          {{ {'none':'Aus','heating':'Heizen','cooling':'Kühlen','hot water':'Warmwasser',
+              'pool':'Pool','defrost':'Abtauen','pool heating':'Pool',
+              'off':'Aus','compressor alarm':'Verdichter-Alarm'}.get(a, a) }}
+        availability: "{{ has_value('sensor.boiler_hpactivity') }}"
+
+      # Momentaner COP = Heizleistung / elektrische Leistungsaufnahme.
+      # Nur gültig, solange der Verdichter läuft (sonst "nicht verfügbar",
+      # damit Langzeit-Mittelwerte nicht durch Stillstand verfälscht werden).
+      - name: "WP COP aktuell"
+        unique_id: wp_cop_aktuell
+        default_entity_id: sensor.wp_cop_aktuell
+        icon: mdi:gauge
+        state_class: measurement
+        state: >
+          {{ (states('sensor.boiler_hppower')|float(0) * 1000
+              / states('sensor.boiler_hpcurrpower')|float(1)) | round(2) }}
+        availability: >
+          {{ states('sensor.boiler_hpcurrpower')|float(0) > 300
+             and states('sensor.boiler_hppower')|float(0) > 0 }}
+
+      # Tages-COP aus den Utility-Metern (EMS-ESP zählt in ganzen kWh,
+      # daher ist der Wert früh am Tag grob).
+      - name: "WP COP heute"
+        unique_id: wp_cop_heute
+        default_entity_id: sensor.wp_cop_heute
+        icon: mdi:chart-line
+        state: >
+          {{ (states('sensor.wpsupptotal24')|float(0)
+              / states('sensor.wpconstotal24_2')|float(1)) | round(2) }}
+        availability: "{{ states('sensor.wpconstotal24_2')|float(0) > 0 }}"
+
+      # Jahresarbeitszahl seit Inbetriebnahme
+      - name: "WP JAZ gesamt"
+        unique_id: wp_jaz_gesamt
+        default_entity_id: sensor.wp_jaz_gesamt
+        icon: mdi:chart-areaspline
+        state: >
+          {{ (states('sensor.boiler_nrgsupptotal')|float(0)
+              / states('sensor.boiler_nrgconstotal')|float(1)) | round(2) }}
+        availability: "{{ states('sensor.boiler_nrgconstotal')|float(0) > 0 }}"
+
+      - name: "WP Spreizung"
+        unique_id: wp_spreizung
+        default_entity_id: sensor.wp_spreizung
+        icon: mdi:arrow-expand-vertical
+        unit_of_measurement: "K"
+        state_class: measurement
+        state: >
+          {{ (states('sensor.boiler_hptc1')|float(0)
+              - states('sensor.boiler_hptc0')|float(0)) | round(1) }}
+        availability: "{{ has_value('sensor.boiler_hptc1') and has_value('sensor.boiler_hptc0') }}"
+
+      # Stromkosten der WP heute (Tagesverbrauch × Ø-Preis heute – Näherung)
+      - name: "WP Stromkosten heute"
+        unique_id: wp_stromkosten_heute
+        default_entity_id: sensor.wp_stromkosten_heute
+        icon: mdi:currency-eur
+        unit_of_measurement: "€"
+        state: >
+          {{ (states('sensor.wpconstotal24_2')|float(0)
+              * states('sensor.haus_price_today')|float(0) / 100) | round(2) }}
+        availability: "{{ has_value('sensor.wpconstotal24_2') and has_value('sensor.haus_price_today') }}"
+
+  # EMS-ESP liefert binary_sensor.boiler_hpcompon bei dieser Anlage nie "on",
+  # daher Verdichterbetrieb aus der Drehzahl ableiten.
+  - binary_sensor:
+      - name: "WP Verdichter läuft"
+        unique_id: wp_verdichter_laeuft
+        default_entity_id: binary_sensor.wp_verdichter_laeuft
+        device_class: running
+        icon: mdi:fan
+        state: "{{ states('sensor.boiler_hpcompspd')|float(0) > 0 }}"
+        availability: "{{ has_value('sensor.boiler_hpcompspd') }}"
+      - name: "WP Abtauen"
+        unique_id: wp_abtauen
+        default_entity_id: binary_sensor.wp_abtauen
+        icon: mdi:snowflake-melt
+        state: "{{ is_state('sensor.boiler_hpactivity', 'defrost') }}"
+        availability: "{{ has_value('sensor.boiler_hpactivity') }}"

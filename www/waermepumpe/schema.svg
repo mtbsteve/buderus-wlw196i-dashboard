@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1060" font-family="Roboto, 'Helvetica Neue', Arial, sans-serif">
+  <!-- Anlagenschema Wärmepumpe. Koordinaten der Wertefelder: siehe dashboards/waermepumpe.yaml (Ansicht "Anlage"),
+       Umrechnung in % : left = x / 18, top = y / 10,6 -->
+  <defs>
+    <style>
+      .ln{stroke:#3a3f47} .lnf{fill:#3a3f47}
+      .fill{fill:#ffffff} .unit{fill:#eef1f5}
+      .txt{fill:#23272e} .sub{fill:#6b7280}
+      .blade{fill:#8f98a4}
+      @media (prefers-color-scheme: dark){
+        .ln{stroke:#c3c9d2} .lnf{fill:#c3c9d2}
+        .fill{fill:#2a2f37} .unit{fill:#252a31}
+        .txt{fill:#e8eaed} .sub{fill:#9aa1ab}
+        .blade{fill:#6f7884}
+      }
+      .vl{stroke:#e0533d;stroke-width:9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+      .rl{stroke:#3b82f6;stroke-width:9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+      .h1{font-size:32px;font-weight:700;text-anchor:middle}
+      .s{font-size:19px;text-anchor:middle}
+      .tag{font-size:15px;font-weight:600}
+    </style>
+    <linearGradient id="tank" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e0533d" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#3b82f6" stop-opacity="0.22"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ── Titel ── -->
+  <text x="220" y="110" class="h1 txt">Außeneinheit</text>
+  <text x="220" y="148" class="s sub">Buderus WLW196i-11 AR</text>
+  <text x="935" y="110" class="h1 txt">Inneneinheit</text>
+  <text x="935" y="148" class="s sub">Heizstab · VW1 · PC0 · PC1 · VC1 · Puffer 120 l</text>
+  <text x="1410" y="110" class="h1 txt">Heizkreis 1</text>
+  <text x="1410" y="148" class="s sub">Heizkörper · ungemischt</text>
+  <text x="1640" y="110" class="h1 txt">Heizkreis 2</text>
+  <text x="1640" y="148" class="s sub">Fußboden · gemischt</text>
+  <text x="480" y="668" class="txt" font-size="24" font-weight="700" text-anchor="middle">Warmwasser</text>
+  <text x="480" y="698" class="sub" font-size="18" text-anchor="middle">400 Liter</text>
+
+  <!-- ── Außenfühler T1 ── -->
+  <rect x="98" y="194" width="24" height="32" rx="4" class="fill ln" stroke-width="3"/>
+  <path d="M103 204 L117 198 M103 213 L117 207 M103 222 L117 216" class="ln" stroke-width="2"/>
+
+  <!-- ── Primärkreis: Vorlauf über Heizstab zu VW1, dann Puffer bzw. WW ── -->
+  <path class="vl" d="M380 330 H900 V712"/>
+  <path class="rl" d="M860 940 H840 V560 H380"/>
+  <!-- Warmwasser-Wendel (Vorlauf mit Brücke über den Rücklauf) -->
+  <path class="vl" d="M760 354 V548 A12 12 0 0 1 760 572 V870 H560 L420 890 L560 910 L420 930"/>
+  <path class="rl" d="M420 930 L560 950 H800 V560"/>
+  <circle cx="800" cy="560" r="9" fill="#3b82f6"/>
+  <!-- Ausdehnungsgefäß am Rücklauf -->
+  <path class="rl" d="M640 505 V560"/>
+  <circle cx="640" cy="560" r="9" fill="#3b82f6"/>
+
+  <!-- ── Sekundärseite: Puffer → HK-Pumpen / Mischer ── -->
+  <path class="vl" d="M1080 712 V255 H1106"/>
+  <path class="vl" d="M1080 345 H1410 V480"/>
+  <path class="vl" d="M1154 255 H1640 V560"/>
+  <circle cx="1080" cy="345" r="9" fill="#e0533d"/>
+  <path class="rl" d="M1470 560 V700"/>
+  <path class="rl" d="M1720 625 V700 H1200"/>
+  <path class="rl" d="M1130 279 V333 A12 12 0 0 1 1130 357 V650 H1200 V920 H1140"/>
+  <circle cx="1470" cy="700" r="9" fill="#3b82f6"/>
+  <circle cx="1200" cy="700" r="9" fill="#3b82f6"/>
+
+  <!-- ── Außeneinheit ── -->
+  <rect x="60" y="260" width="320" height="360" rx="18" class="unit ln" stroke-width="4"/>
+  <circle cx="220" cy="430" r="115" class="fill ln" stroke-width="4"/>
+  <g class="blade">
+    <ellipse cx="272" cy="430" rx="50" ry="19"/>
+    <ellipse cx="272" cy="430" rx="50" ry="19" transform="rotate(90 220 430)"/>
+    <ellipse cx="272" cy="430" rx="50" ry="19" transform="rotate(180 220 430)"/>
+    <ellipse cx="272" cy="430" rx="50" ry="19" transform="rotate(270 220 430)"/>
+  </g>
+  <circle cx="220" cy="430" r="16" class="lnf"/>
+
+  <!-- ── Inneneinheit TP120: Hydraulik oben, Puffer unten ── -->
+  <rect x="600" y="198" width="670" height="802" rx="16" fill="none" class="ln" stroke-width="3" stroke-dasharray="10 8"/>
+  <!-- Heizstab im Vorlauf vor VW1 -->
+  <text x="670" y="290" class="tag sub" text-anchor="middle">Heizstab</text>
+  <rect x="640" y="300" width="60" height="60" rx="6" class="fill ln" stroke-width="4"/>
+  <path d="M674 306 L656 332 H668 L660 354 L684 324 H672 Z" fill="#f2b705"/>
+  <!-- Umschaltventil VW1 -->
+  <path d="M736 317 L760 330 L736 343 Z M784 317 L760 330 L784 343 Z M747 354 L760 330 L773 354 Z" class="fill ln" stroke-width="3" stroke-linejoin="round"/>
+  <text x="760" y="304" class="tag sub" text-anchor="middle">VW1</text>
+  <!-- Ausdehnungsgefäß -->
+  <rect x="620" y="440" width="40" height="65" rx="18" class="fill ln" stroke-width="4"/>
+  <path d="M622 472 H658" class="ln" stroke-width="3"/>
+  <text x="668" y="478" class="tag sub">MAG</text>
+  <!-- Pumpe PC0 -->
+  <circle cx="700" cy="560" r="26" class="fill ln" stroke-width="4"/>
+  <path d="M682 560 L712 543 L712 577 Z" class="lnf"/>
+  <!-- HK2: Mischer VC1 + Pumpe PC1 -->
+  <path d="M1106 243 L1130 255 L1106 267 Z M1154 243 L1130 255 L1154 267 Z M1118 279 L1130 255 L1142 279 Z" class="fill ln" stroke-width="3" stroke-linejoin="round"/>
+  <text x="1130" y="234" class="tag sub" text-anchor="middle">VC1</text>
+  <circle cx="1210" cy="255" r="22" class="fill ln" stroke-width="4"/>
+  <path d="M1228 255 L1200 240 V270 Z" class="lnf"/>
+  <text x="1210" y="228" class="tag sub" text-anchor="middle">PC1 HK2</text>
+  <!-- HK1: Pumpe PC1 -->
+  <circle cx="1210" cy="345" r="22" class="fill ln" stroke-width="4"/>
+  <path d="M1228 345 L1200 330 V360 Z" class="lnf"/>
+  <text x="1210" y="392" class="tag sub" text-anchor="middle">PC1 HK1</text>
+  <!-- Pufferspeicher 120 l (parallel) -->
+  <rect x="860" y="700" width="280" height="260" rx="60" fill="url(#tank)"/>
+  <rect x="860" y="700" width="280" height="260" rx="60" fill="none" class="ln" stroke-width="4"/>
+  <text x="1000" y="850" class="txt" font-size="24" font-weight="700" text-anchor="middle">Pufferspeicher</text>
+  <text x="1000" y="880" class="sub" font-size="18" text-anchor="middle">120 Liter · parallel</text>
+
+  <!-- ── Warmwasserspeicher ── -->
+  <rect x="390" y="720" width="180" height="260" rx="50" fill="url(#tank)"/>
+  <rect x="390" y="720" width="180" height="260" rx="50" fill="none" class="ln" stroke-width="4"/>
+
+  <!-- ── Heizkreis 1: Heizkörper ── -->
+  <rect x="1330" y="480" width="160" height="80" rx="8" class="fill ln" stroke-width="4"/>
+  <g class="ln" stroke-width="4">
+    <line x1="1355" y1="490" x2="1355" y2="550"/><line x1="1377" y1="490" x2="1377" y2="550"/>
+    <line x1="1399" y1="490" x2="1399" y2="550"/><line x1="1421" y1="490" x2="1421" y2="550"/>
+    <line x1="1443" y1="490" x2="1443" y2="550"/><line x1="1465" y1="490" x2="1465" y2="550"/>
+  </g>
+
+  <!-- ── Heizkreis 2: Fußbodenheizung ── -->
+  <rect x="1580" y="560" width="160" height="65" rx="8" class="fill ln" stroke-width="4"/>
+  <path d="M1594 573 H1726 V585 H1594 V597 H1726 V609 H1594 V616" fill="none" stroke="#e0533d" stroke-opacity="0.6" stroke-width="3"/>
+</svg>

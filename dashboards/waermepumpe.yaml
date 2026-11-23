@@ -1,0 +1,899 @@
+# Dashboard "Wärmepumpe" (YAML-Modus, eingebunden in configuration.yaml)
+# Kennzahlen (COP, JAZ, Spreizung …) kommen aus packages/waermepumpe.yaml
+title: Wärmepumpe
+views:
+  # ───────────────────────────── Übersicht ─────────────────────────────
+  - title: Übersicht
+    path: uebersicht
+    icon: mdi:heat-pump
+    type: sections
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Status
+            icon: mdi:heat-pump
+          - type: tile
+            entity: sensor.wp_betriebszustand
+            name: Betrieb
+          - type: tile
+            entity: binary_sensor.wp_verdichter_laeuft
+            name: Verdichter
+            icon: mdi:fan
+          - type: tile
+            entity: sensor.boiler_hpcompspd
+            name: Verdichter-Drehzahl
+          - type: tile
+            entity: sensor.boiler_hpcurrpower
+            name: Stromaufnahme
+            icon: mdi:flash
+          - type: tile
+            entity: sensor.boiler_hppower
+            name: Heizleistung
+            icon: mdi:fire
+          - type: tile
+            entity: sensor.wp_cop_aktuell
+            name: COP aktuell
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Temperaturen
+            icon: mdi:thermometer
+          - type: tile
+            entity: sensor.boiler_outdoortemp
+            name: Außen
+            icon: mdi:sun-thermometer-outline
+          - type: tile
+            entity: sensor.thermostat_hc1_targetflowtemp
+            name: Vorlauf Soll
+            icon: mdi:thermometer-chevron-up
+          - type: tile
+            entity: sensor.boiler_curflowtemp
+            name: Vorlauf
+            icon: mdi:thermometer-chevron-up
+          - type: tile
+            entity: sensor.boiler_rettemp
+            name: Rücklauf
+            icon: mdi:thermometer-chevron-down
+          - type: tile
+            entity: sensor.wp_spreizung
+            name: Spreizung
+          - type: tile
+            entity: sensor.boiler_wwcurtemp2
+            name: Warmwasser
+            icon: mdi:water-boiler
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Heizkreise
+            icon: mdi:radiator
+          - type: thermostat
+            entity: climate.thermostat_hc1
+            name: HK1 Heizkörper
+          - type: thermostat
+            entity: climate.thermostat_hc2
+            name: HK2 Fußboden
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Heute
+            icon: mdi:calendar-today
+          - type: tile
+            entity: sensor.wpconstotal24_2
+            name: Strom
+            icon: mdi:flash
+          - type: tile
+            entity: sensor.wpsupptotal24
+            name: Wärme
+            icon: mdi:fire
+          - type: tile
+            entity: sensor.wp_cop_heute
+            name: COP heute
+          - type: tile
+            entity: sensor.wp_stromkosten_heute
+            name: Kosten (ca.)
+          - type: tile
+            entity: sensor.haus_current_electricity_price
+            name: Strompreis
+          - type: tile
+            entity: sensor.heat_pump_pv_surplus_status
+            name: PV-Steuerung
+            icon: mdi:solar-power-variant
+
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Verlauf 24 h
+            icon: mdi:chart-line
+          - type: history-graph
+            title: Temperaturen
+            hours_to_show: 24
+            grid_options:
+              columns: full
+            entities:
+              - entity: sensor.boiler_outdoortemp
+                name: Außen
+              - entity: sensor.thermostat_hc1_targetflowtemp
+                name: Vorlauf Soll
+              - entity: sensor.boiler_curflowtemp
+                name: Vorlauf
+              - entity: sensor.boiler_rettemp
+                name: Rücklauf
+              - entity: sensor.boiler_wwcurtemp2
+                name: Warmwasser
+          - type: history-graph
+            title: Leistung
+            hours_to_show: 24
+            grid_options:
+              columns: full
+            entities:
+              - entity: sensor.boiler_hpcurrpower
+                name: Stromaufnahme
+              - entity: sensor.heat_pump_pv_surplus_available_power
+                name: PV verfügbar
+          - type: history-graph
+            title: Betrieb
+            hours_to_show: 24
+            grid_options:
+              columns: full
+            entities:
+              - entity: sensor.wp_betriebszustand
+                name: Betrieb
+              - entity: binary_sensor.wp_verdichter_laeuft
+                name: Verdichter
+              - entity: binary_sensor.boiler_wwcharging
+                name: WW-Ladung
+
+  # ───────────────────────────── Anlagenschema ─────────────────────────────
+  # Grafik: www/waermepumpe/schema.svg (1800×1060). Positionen in %: left = x/18, top = y/10,6.
+  # Schriftgröße der Wertefelder wächst mit der Bildbreite (Bild ≈ 100vw − Seitenleiste).
+  - title: Anlage
+    path: anlage
+    icon: mdi:pipe
+    type: panel
+    cards:
+      - type: picture-elements
+        image: /local/waermepumpe/schema.svg?v=4
+        elements:
+          # ── Animationen ──
+          - type: conditional
+            conditions:
+              - entity: binary_sensor.wp_verdichter_laeuft
+                state: "on"
+            elements:
+              - type: image
+                image: /local/waermepumpe/flow-primaer.svg?v=4
+                tap_action: {action: none}
+                hold_action: {action: none}
+                style: {left: 50%, top: 50%, width: 100%, pointer-events: none}
+              - type: image
+                image: /local/waermepumpe/fan.svg?v=4
+                tap_action: {action: none}
+                hold_action: {action: none}
+                style: {left: 12.222%, top: 40.566%, width: 13.333%, pointer-events: none}
+          - type: conditional
+            conditions:
+              - entity: sensor.wp_betriebszustand
+                state: "Heizen"
+            elements:
+              - type: image
+                image: /local/waermepumpe/flow-heizen.svg?v=4
+                tap_action: {action: none}
+                hold_action: {action: none}
+                style: {left: 50%, top: 50%, width: 100%, pointer-events: none}
+          - type: conditional
+            conditions:
+              - entity: sensor.wp_betriebszustand
+                state: "Warmwasser"
+            elements:
+              - type: image
+                image: /local/waermepumpe/flow-ww.svg?v=4
+                tap_action: {action: none}
+                hold_action: {action: none}
+                style: {left: 50%, top: 50%, width: 100%, pointer-events: none}
+          - type: conditional
+            conditions:
+              - entity: binary_sensor.boiler_pc1on
+                state: "on"
+            elements:
+              - type: image
+                image: /local/waermepumpe/flow-hk1.svg?v=4
+                tap_action: {action: none}
+                hold_action: {action: none}
+                style: {left: 50%, top: 50%, width: 100%, pointer-events: none}
+          - type: conditional
+            conditions:
+              - entity: switch.mixer_hc2_pumpstatus
+                state: "on"
+            elements:
+              - type: image
+                image: /local/waermepumpe/flow-hk2.svg?v=4
+                tap_action: {action: none}
+                hold_action: {action: none}
+                style: {left: 50%, top: 50%, width: 100%, pointer-events: none}
+          - type: conditional
+            conditions:
+              - entity: binary_sensor.wp_abtauen
+                state: "on"
+            elements:
+              - type: image
+                image: /local/waermepumpe/defrost.svg?v=4
+                tap_action: {action: none}
+                hold_action: {action: none}
+                style: {left: 12.222%, top: 40.566%, width: 13.333%, pointer-events: none}
+
+          # ── Außeneinheit ──
+          - type: state-label
+            entity: sensor.boiler_outdoortemp
+            prefix: "T1 Außen "
+            style: {left: 12.778%, top: 19.811%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap}
+          - type: state-label
+            entity: sensor.boiler_hpcompspd
+            prefix: "Verdichter "
+            style: {left: 12.222%, top: 55.472%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap}
+          - type: state-label
+            entity: sensor.wp_betriebszustand
+            prefix: "Betrieb: "
+            style: {left: 12.222%, top: 62.736%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap, font-weight: 600}
+          - type: conditional
+            conditions:
+              - entity: binary_sensor.wp_abtauen
+                state_not: "on"
+            elements:
+              - type: state-label
+                entity: binary_sensor.wp_abtauen
+                prefix: "❄ Abtauen "
+                style: {left: 12.222%, top: 67.453%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap}
+          - type: conditional
+            conditions:
+              - entity: binary_sensor.wp_abtauen
+                state: "on"
+            elements:
+              - type: state-label
+                entity: binary_sensor.wp_abtauen
+                prefix: "❄ Abtauen "
+                style: {left: 12.222%, top: 67.453%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "#2f8fe0", color: white, border: "1px solid #2f8fe0", white-space: nowrap, font-weight: 700}
+          - type: state-label
+            entity: sensor.boiler_hpcurrpower
+            prefix: "Strom "
+            style: {left: 12.222%, top: 72.170%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap}
+          - type: state-label
+            entity: sensor.boiler_hppower
+            prefix: "Wärme "
+            style: {left: 12.222%, top: 76.887%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap}
+          - type: state-label
+            entity: sensor.wp_cop_aktuell
+            prefix: "COP "
+            style: {left: 12.222%, top: 81.604%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "2px solid var(--success-color)", white-space: nowrap}
+
+          # ── Primärkreis / Inneneinheit ──
+          - type: state-label
+            entity: sensor.boiler_hptc1
+            prefix: "TC1 "
+            style: {left: 26.667%, top: 27.547%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "2px solid #e0533d", white-space: nowrap}
+          - type: state-label
+            entity: sensor.boiler_hptc0
+            prefix: "TC0 "
+            style: {left: 26.667%, top: 56.604%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "2px solid #3b82f6", white-space: nowrap}
+          - type: state-label
+            entity: sensor.boiler_auxheaterlevel
+            prefix: ""
+            style: {left: 37.222%, top: 37.736%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap}
+          - type: state-label
+            entity: sensor.boiler_hpcircspd
+            prefix: "PC0 "
+            style: {left: 38.889%, top: 57.547%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap}
+          - type: state-label
+            entity: sensor.boiler_headertemp
+            prefix: "T0 "
+            style: {left: 55.556%, top: 72.642%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "2px solid #e0533d", white-space: nowrap}
+
+          # ── Warmwasserspeicher ──
+          - type: state-label
+            entity: number.boiler_wwseltemp
+            prefix: "Soll "
+            style: {left: 26.667%, top: 73.585%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap}
+          - type: state-label
+            entity: sensor.boiler_wwcurtemp2
+            prefix: "TW1 "
+            style: {left: 26.667%, top: 78.774%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap, font-weight: 600}
+
+          # ── Heizkreis 1 (Raumwert unter der Überschrift) ──
+          - type: state-label
+            entity: number.thermostat_hc1_seltemp
+            prefix: "Raum Soll "
+            style: {left: 78.333%, top: 16.981%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap}
+          - type: state-label
+            entity: sensor.thermostat_hc1_targetflowtemp
+            prefix: "VL Soll "
+            style: {left: 78.333%, top: 28.302%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "2px solid #e0533d", white-space: nowrap}
+          - type: state-label
+            entity: sensor.boiler_curflowtemp
+            prefix: "VL Ist "
+            style: {left: 78.333%, top: 38.679%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "2px solid #e0533d", white-space: nowrap}
+
+          # ── Heizkreis 2 (Raumwerte unter der Überschrift) ──
+          - type: state-label
+            entity: sensor.thermostat_hc2_currtemp
+            prefix: "Raum "
+            style: {left: 91.111%, top: 16.981%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap}
+          - type: state-label
+            entity: sensor.thermostat_hc2_airhumidity
+            prefix: "Feuchte "
+            style: {left: 91.111%, top: 20.943%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap}
+          - type: state-label
+            entity: sensor.mixer_hc2_valvestatus
+            prefix: "Mischer "
+            style: {left: 55.000%, top: 24.057%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "1px solid var(--divider-color)", white-space: nowrap}
+          - type: state-label
+            entity: sensor.thermostat_hc2_targetflowtemp
+            prefix: "VL Soll "
+            style: {left: 91.111%, top: 28.302%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "2px solid #e0533d", white-space: nowrap}
+          - type: state-label
+            entity: sensor.mixer_hc2_flowtemphc
+            prefix: "VL Ist "
+            style: {left: 91.111%, top: 38.679%, font-size: "clamp(8px, calc((100vw - 270px) * 0.0105), 16px)", padding: 0, height: "1.6em", display: flex, align-items: center, overflow: hidden, border-radius: 10px, background: "var(--card-background-color)", color: "var(--primary-text-color)", border: "2px solid #e0533d", white-space: nowrap}
+
+  # ───────────────────────────── Warmwasser ─────────────────────────────
+  - title: Warmwasser
+    path: warmwasser
+    icon: mdi:water-boiler
+    type: sections
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Speicher
+            icon: mdi:water-boiler
+          - type: tile
+            entity: sensor.boiler_wwcurtemp2
+            name: Speicher (TW1)
+          - type: tile
+            entity: sensor.boiler_wwcurtemp
+            name: Intern
+          - type: tile
+            entity: sensor.boiler_wwsettemp
+            name: Soll aktuell
+          - type: tile
+            entity: binary_sensor.boiler_wwcharging
+            name: Ladung aktiv
+          - type: tile
+            entity: binary_sensor.boiler_wwtempok
+            name: Temperatur ok
+          - type: tile
+            entity: binary_sensor.boiler_ww3wayvalve
+            name: 3-Wege-Ventil WW
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Bedienung
+            icon: mdi:tune
+          - type: tile
+            entity: switch.boiler_wwonetime
+            name: Einmalladung
+            icon: mdi:water-plus
+            grid_options:
+              columns: 12
+            features_position: inline
+            features:
+              - type: toggle
+          - type: tile
+            entity: select.thermostat_wwmode
+            name: Betriebsart
+            grid_options:
+              columns: 12
+            features:
+              - type: select-options
+          - type: tile
+            entity: select.boiler_wwcomfort1
+            name: Komfort
+            grid_options:
+              columns: 12
+            features:
+              - type: select-options
+          - type: entities
+            entities:
+              - entity: number.boiler_wwseltemp
+                name: Solltemperatur
+              - entity: number.boiler_wwseltemplow
+                name: Solltemperatur Eco
+              - entity: number.boiler_wwseltempsingle
+                name: Einmalladung Temperatur
+
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Verlauf 48 h
+            icon: mdi:chart-line
+          - type: history-graph
+            hours_to_show: 48
+            grid_options:
+              columns: full
+            entities:
+              - entity: sensor.boiler_wwcurtemp2
+                name: Speicher
+              - entity: sensor.boiler_wwcurtemp
+                name: Intern
+              - entity: sensor.boiler_wwsettemp
+                name: Soll
+          - type: history-graph
+            hours_to_show: 48
+            grid_options:
+              columns: full
+            entities:
+              - entity: binary_sensor.boiler_wwcharging
+                name: Ladung
+          - type: statistics-graph
+            title: Warmwasser pro Tag
+            chart_type: bar
+            period: day
+            days_to_show: 14
+            stat_types:
+              - change
+            grid_options:
+              columns: full
+            entities:
+              - entity: sensor.boiler_nrgconscompww
+                name: Strom
+              - entity: sensor.boiler_nrgsuppww
+                name: Wärme
+
+  # ───────────────────────────── Energie ─────────────────────────────
+  - title: Energie
+    path: energie
+    icon: mdi:lightning-bolt
+    type: sections
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Kennzahlen
+            icon: mdi:chart-areaspline
+          - type: tile
+            entity: sensor.wp_jaz_gesamt
+            name: JAZ gesamt
+          - type: tile
+            entity: sensor.wp_cop_heute
+            name: COP heute
+          - type: tile
+            entity: sensor.boiler_nrgconstotal
+            name: Strom gesamt
+            icon: mdi:flash
+          - type: tile
+            entity: sensor.boiler_nrgsupptotal
+            name: Wärme gesamt
+            icon: mdi:fire
+          - type: tile
+            entity: sensor.boiler_auxelecheatnrgconstotal
+            name: Heizstab gesamt
+            icon: mdi:heating-coil
+          - type: tile
+            entity: sensor.boiler_nrgsuppcooling
+            name: Kühlung gesamt
+            icon: mdi:snowflake
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Heute nach Art
+            icon: mdi:calendar-today
+          - type: tile
+            entity: sensor.wpsuppheating24
+            name: Wärme Heizen
+            icon: mdi:radiator
+          - type: tile
+            entity: sensor.wpsuppww24
+            name: Wärme Warmwasser
+            icon: mdi:water-boiler
+          - type: tile
+            entity: sensor.wpconsww24
+            name: Strom Warmwasser
+            icon: mdi:flash
+          - type: tile
+            entity: sensor.wpconstotal24_2
+            name: Strom gesamt
+            icon: mdi:flash
+
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Verlauf
+            icon: mdi:chart-bar
+          - type: statistics-graph
+            title: Strom & Wärme pro Tag
+            chart_type: bar
+            period: day
+            days_to_show: 30
+            stat_types:
+              - change
+            grid_options:
+              columns: full
+            entities:
+              - entity: sensor.boiler_nrgconstotal
+                name: Strom
+              - entity: sensor.boiler_nrgsupptotal
+                name: Wärme
+          - type: statistics-graph
+            title: Strom pro Tag nach Art
+            chart_type: bar
+            period: day
+            days_to_show: 30
+            stat_types:
+              - change
+            grid_options:
+              columns: full
+            entities:
+              - entity: sensor.boiler_nrgconscompheating
+                name: Heizen
+              - entity: sensor.boiler_nrgconscompww
+                name: Warmwasser
+              - entity: sensor.boiler_auxelecheatnrgconstotal
+                name: Heizstab
+          - type: statistics-graph
+            title: Strom & Wärme pro Monat
+            chart_type: bar
+            period: month
+            days_to_show: 365
+            stat_types:
+              - change
+            grid_options:
+              columns: full
+            entities:
+              - entity: sensor.boiler_nrgconstotal
+                name: Strom
+              - entity: sensor.boiler_nrgsupptotal
+                name: Wärme
+          - type: statistics-graph
+            title: COP (Tagesmittel bei Verdichterbetrieb)
+            chart_type: line
+            period: day
+            days_to_show: 30
+            stat_types:
+              - mean
+            grid_options:
+              columns: full
+            entities:
+              - entity: sensor.wp_cop_aktuell
+                name: COP
+
+  # ───────────────────────────── Technik ─────────────────────────────
+  - title: Technik
+    path: technik
+    icon: mdi:cog-outline
+    type: sections
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Kältekreis
+            icon: mdi:snowflake-thermometer
+          - type: tile
+            entity: sensor.boiler_hptl2
+            name: Luftansaugung (TL2)
+          - type: tile
+            entity: sensor.boiler_hptr4
+            name: Verdampfer ein (TR4)
+          - type: tile
+            entity: sensor.boiler_hptr5
+            name: Sauggas (TR5)
+          - type: tile
+            entity: sensor.boiler_hptr6
+            name: Heißgas (TR6)
+          - type: tile
+            entity: sensor.boiler_hptr1
+            name: Verdichter (TR1)
+          - type: tile
+            entity: sensor.boiler_hptr3
+            name: Kondensat flüssig (TR3)
+          - type: tile
+            entity: sensor.boiler_hppl1
+            name: Niederdruck (PL1)
+          - type: tile
+            entity: sensor.boiler_hpph1
+            name: Hochdruck (PH1)
+          - type: tile
+            entity: sensor.boiler_hpta4
+            name: Kondensatwanne (TA4)
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Verdichter & Hydraulik
+            icon: mdi:pump
+          - type: tile
+            entity: sensor.boiler_hpcompspd
+            name: Verdichter Ist
+          - type: tile
+            entity: sensor.boiler_hptargetspd
+            name: Verdichter Soll
+          - type: tile
+            entity: sensor.boiler_fanspd
+            name: Ventilator
+          - type: tile
+            entity: sensor.boiler_expvalve
+            name: Expansionsventil
+          - type: tile
+            entity: sensor.boiler_hpcircspd
+            name: Umwälzpumpe
+          - type: tile
+            entity: binary_sensor.boiler_hpswitchvalve
+            name: Umschaltventil
+          - type: tile
+            entity: sensor.boiler_hptc1
+            name: Vorlauf (TC1)
+          - type: tile
+            entity: sensor.boiler_hptc0
+            name: Rücklauf (TC0)
+          - type: tile
+            entity: sensor.boiler_hptc3
+            name: Kondensator (TC3)
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: HK2 Mischer
+            icon: mdi:valve
+          - type: tile
+            entity: sensor.mixer_hc2_flowtemphc
+            name: Vorlauf HK2
+          - type: tile
+            entity: number.mixer_hc2_flowsettemp
+            name: Vorlauf Soll HK2
+          - type: tile
+            entity: sensor.mixer_hc2_valvestatus
+            name: Mischerstellung
+          - type: tile
+            entity: switch.mixer_hc2_pumpstatus
+            name: Pumpe HK2
+          - type: heading
+            heading: Zusatzheizer
+            heading_style: subtitle
+          - type: tile
+            entity: sensor.boiler_auxheaterstatus
+            name: Status
+            icon: mdi:heating-coil
+          - type: tile
+            entity: sensor.boiler_auxheaterlevel
+            name: Leistung
+            icon: mdi:heating-coil
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Zähler & Diagnose
+            icon: mdi:counter
+          - type: tile
+            entity: sensor.boiler_totalcompstarts
+            name: Verdichterstarts
+          - type: tile
+            entity: sensor.boiler_uptimecompheating
+            name: Laufzeit Heizen
+          - type: tile
+            entity: sensor.boiler_uptimecompww
+            name: Laufzeit Warmwasser
+          - type: tile
+            entity: sensor.boiler_wwstartshp
+            name: WW-Starts
+          - type: tile
+            entity: sensor.boiler_lastcode
+            name: Letzter Fehler
+            icon: mdi:alert-circle-outline
+            grid_options:
+              columns: 12
+          - type: tile
+            entity: sensor.boiler_servicecode
+            name: Servicecode
+            icon: mdi:wrench-outline
+          - type: tile
+            entity: binary_sensor.system_status
+            name: EMS-ESP
+
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Kältekreis 24 h
+            icon: mdi:chart-line
+          - type: history-graph
+            hours_to_show: 24
+            grid_options:
+              columns: full
+            entities:
+              - entity: sensor.boiler_hptr6
+                name: Heißgas
+              - entity: sensor.boiler_hpph1
+                name: Hochdruck
+              - entity: sensor.boiler_hptc1
+                name: Vorlauf
+              - entity: sensor.boiler_hptl2
+                name: Luft
+              - entity: sensor.boiler_hppl1
+                name: Niederdruck
+              - entity: sensor.boiler_hptr5
+                name: Sauggas
+          - type: history-graph
+            hours_to_show: 24
+            grid_options:
+              columns: full
+            entities:
+              - entity: sensor.boiler_hpcompspd
+                name: Verdichter
+              - entity: sensor.boiler_fanspd
+                name: Ventilator
+              - entity: sensor.boiler_hpcircspd
+                name: Umwälzpumpe
+
+  # ───────────────────────────── PV & Strompreis ─────────────────────────────
+  - title: PV & Preis
+    path: pv
+    icon: mdi:solar-power-variant
+    type: sections
+    max_columns: 4
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: PV-Überschuss-Steuerung
+            icon: mdi:solar-power-variant
+          - type: custom:emsesp-pv-surplus-card
+            grid_options:
+              columns: full
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Strompreis (Haus)
+            icon: mdi:currency-eur
+          - type: tile
+            entity: sensor.haus_current_electricity_price
+            name: Aktuell
+          - type: tile
+            entity: sensor.haus_current_price_level
+            name: Niveau
+          - type: tile
+            entity: sensor.haus_price_today
+            name: Ø heute
+          - type: tile
+            entity: sensor.haus_current_price_trend
+            name: Trend
+          - type: tile
+            entity: sensor.haus_best_price_start
+            name: Günstigste Phase ab
+            grid_options:
+              columns: 12
+          - type: tile
+            entity: sensor.haus_peak_price_start
+            name: Teuerste Phase ab
+            grid_options:
+              columns: 12
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: PV-Status
+            icon: mdi:information-outline
+          - type: tile
+            entity: sensor.heat_pump_pv_surplus_status
+            name: Status
+            grid_options:
+              columns: 12
+          - type: tile
+            entity: select.heat_pump_pv_surplus_mode
+            name: Modus
+            grid_options:
+              columns: 12
+            features:
+              - type: select-options
+          - type: tile
+            entity: sensor.heat_pump_pv_surplus_available_power
+            name: Verfügbar
+          - type: tile
+            entity: sensor.heat_pump_pv_surplus_pv_runtime_today
+            name: PV-Laufzeit heute
+          - type: tile
+            entity: binary_sensor.heat_pump_pv_surplus_pv_signal_at_heat_pump
+            name: SG-Ready Signal
+          - type: tile
+            entity: number.boiler_pvmaxcomp
+            name: PV max. Verdichter
+
+  # ───────────────────────────── Einstellungen ─────────────────────────────
+  - title: Einstellungen
+    path: einstellungen
+    icon: mdi:tune-variant
+    type: sections
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: HK1 Heizkörper
+            icon: mdi:radiator
+          - type: entities
+            entities:
+              - entity: select.thermostat_hc1_mode
+                name: Betriebsart
+              - entity: select.thermostat_hc1_program
+                name: Programm
+              - entity: number.thermostat_hc1_seltemp
+                name: Raum Soll
+              - entity: number.thermostat_hc1_ecotemp
+                name: Absenktemperatur
+              - type: section
+                label: Heizkurve
+              - entity: number.thermostat_hc1_designtemp
+                name: Auslegungstemperatur
+              - entity: number.thermostat_hc1_offsettemp
+                name: Parallelverschiebung
+              - entity: number.thermostat_hc1_maxflowtemp
+                name: Max. Vorlauf
+              - entity: number.thermostat_hc1_summertemp
+                name: Sommerumschaltung
+              - entity: select.thermostat_hc1_hpoperatingmode
+                name: WP-Betriebsart
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: HK2 Fußboden
+            icon: mdi:heating-coil
+          - type: entities
+            entities:
+              - entity: select.thermostat_hc2_mode
+                name: Betriebsart
+              - entity: select.thermostat_hc2_program
+                name: Programm
+              - entity: number.thermostat_hc2_seltemp
+                name: Raum Soll
+              - entity: number.thermostat_hc2_ecotemp
+                name: Absenktemperatur
+              - type: section
+                label: Heizkurve
+              - entity: number.thermostat_hc2_designtemp
+                name: Auslegungstemperatur
+              - entity: number.thermostat_hc2_offsettemp
+                name: Parallelverschiebung
+              - entity: number.thermostat_hc2_maxflowtemp
+                name: Max. Vorlauf
+              - entity: number.thermostat_hc2_summertemp
+                name: Sommerumschaltung
+              - entity: number.thermostat_hc2_roominfluence
+                name: Raumeinfluss
+              - entity: select.thermostat_hc2_hpoperatingmode
+                name: WP-Betriebsart
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Wärmepumpe
+            icon: mdi:heat-pump
+          - type: entities
+            entities:
+              - entity: number.boiler_hpmaxpower
+                name: Max. Verdichterleistung
+              - entity: select.boiler_silentmode
+                name: Flüstermodus
+              - entity: number.boiler_silentfrom
+                name: Flüstermodus ab (min)
+              - entity: number.boiler_silentto
+                name: Flüstermodus bis (min)
+              - type: section
+                label: Zusatzheizer
+              - entity: switch.boiler_auxheateroff
+                name: Zusatzheizer gesperrt
+              - entity: select.boiler_auxheatrmode
+                name: Zusatzheizer Modus
+              - entity: number.boiler_auxheaterdelay
+                name: Einschaltverzögerung

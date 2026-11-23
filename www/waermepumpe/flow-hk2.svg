@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1060">
+ <g fill="none" stroke="#ffffff" stroke-opacity="0.9" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="8 22">
+  <animate attributeName="stroke-dashoffset" from="30" to="0" dur="0.9s" repeatCount="indefinite"/>
+  <path d="M1080 712 V255 H1106"/>
+  <path d="M1154 255 H1640 V560"/>
+  <path d="M1720 625 V700 H1200 V920 H1140"/>
+  <path d="M1200 650 H1130 V357 A12 12 0 0 0 1130 333 V279"/>
+ </g>
+</svg>
