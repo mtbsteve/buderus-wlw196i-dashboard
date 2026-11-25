@@ -56,7 +56,7 @@ www/waermepumpe/flow-*.svg     animierte Fluss-Overlays (Primärkreis, Puffer, W
 www/waermepumpe/fan.svg        drehender Ventilator
 www/waermepumpe/defrost.svg    Abtau-Overlay
 examples/utility_meter.yaml    Tageszähler für Strom und Wärme (optional, siehe unten)
-docs/anlage.jpg                Screenshot (Stand vor HEMS-Box und Übersichts-Umbau)
+docs/anlage.jpg                Screenshot der Ansicht „Anlage“
 ```
 
 ## Voraussetzungen
