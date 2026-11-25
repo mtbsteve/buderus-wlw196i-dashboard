@@ -75,7 +75,7 @@
   <circle cx="220" cy="430" r="16" class="lnf"/>
 
   <!-- ── Inneneinheit TP120: Hydraulik oben, Puffer unten ── -->
-  <rect x="600" y="198" width="670" height="802" rx="16" fill="none" class="ln" stroke-width="3" stroke-dasharray="10 8"/>
+  <rect x="600" y="198" width="670" height="802" rx="16" fill="none" class="ln" stroke-width="4"/>
   <!-- Heizstab im Vorlauf vor VW1 -->
   <text x="670" y="290" class="tag sub" text-anchor="middle">Heizstab</text>
   <rect x="640" y="300" width="60" height="60" rx="6" class="fill ln" stroke-width="4"/>
@@ -121,4 +121,11 @@
   <!-- ── Heizkreis 2: Fußbodenheizung ── -->
   <rect x="1580" y="560" width="160" height="65" rx="8" class="fill ln" stroke-width="4"/>
   <path d="M1594 573 H1726 V585 H1594 V597 H1726 V609 H1594 V616" fill="none" stroke="#e0533d" stroke-opacity="0.6" stroke-width="3"/>
+  <!-- ── HEMS-Leistungssteuerung (Signale an die Eingänge der Inneneinheit) ── -->
+  <path d="M1270 865 H1350" fill="none" class="ln" stroke-width="3" stroke-dasharray="7 6"/>
+  <circle cx="1270" cy="865" r="6" class="lnf"/>
+  <circle cx="1350" cy="865" r="6" class="lnf"/>
+  <text x="1310" y="852" class="tag sub" text-anchor="middle" font-size="13">EMS-Bus</text>
+  <rect x="1350" y="795" width="370" height="175" rx="14" class="unit ln" stroke-width="3"/>
+  <text x="1535" y="775" class="txt" font-size="24" font-weight="700" text-anchor="middle">HEMS-Leistungssteuerung</text>
 </svg>

@@ -53,6 +53,18 @@ template:
               / states('sensor.boiler_nrgconstotal')|float(1)) | round(2) }}
         availability: "{{ states('sensor.boiler_nrgconstotal')|float(0) > 0 }}"
 
+      # Heizleistung in W (EMS-ESP liefert kW), damit sie zusammen mit der
+      # Stromaufnahme (W) auf einer Achse im Diagramm "Leistung" steht.
+      - name: "WP Heizleistung"
+        unique_id: wp_heizleistung
+        default_entity_id: sensor.wp_heizleistung
+        icon: mdi:fire
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: "{{ (states('sensor.boiler_hppower')|float(0) * 1000) | round(0) }}"
+        availability: "{{ has_value('sensor.boiler_hppower') }}"
+
       - name: "WP Spreizung"
         unique_id: wp_spreizung
         default_entity_id: sensor.wp_spreizung

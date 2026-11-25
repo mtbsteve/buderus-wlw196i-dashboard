@@ -10,13 +10,13 @@ Die Daten kommen über [EMS-ESP](https://emsesp.org) per MQTT in Home Assistant.
 
 | Ansicht | Inhalt |
 |---|---|
-| **Übersicht** | Betriebszustand, Verdichter, Leistung, COP, Temperaturen, Thermostate HK1/HK2, Tageswerte, 24-h-Verläufe |
+| **Übersicht** | Links: Thermostate HK1/HK2 nebeneinander, darunter 24-h-Verläufe (Temperaturen: Außen, Vorlauf HK1/HK2, Rücklauf, Warmwasser; Leistung: Stromaufnahme und Heizleistung; Betrieb). Rechts: Heute, Status, Temperaturen, Warmwasserspeicher |
 | **Anlage** | Animiertes Anlagenschema, siehe unten |
-| **Warmwasser** | Speichertemperaturen, Einmalladung, WW-Modus und Komfortstufe, Solltemperaturen, Verläufe |
 | **Energie** | JAZ, Tages-COP, Strom und Wärme pro Tag und Monat (Statistik-Diagramme) |
 | **Technik** | Kältekreis-Temperaturen und -Drücke, Verdichter, Hydraulik, Mischer HK2, Zusatzheizer, Fehlercodes |
 | **PV & Preis** | PV-Überschuss-Steuerung und Tibber-Strompreis |
-| **Einstellungen** | Parameter von HK1, HK2 und Wärmepumpe (Silent-Modus, Zusatzheizer usw.) |
+
+Die Ansichten **Warmwasser** (Bedienung: Einmalladung, WW-Modus, Komfortstufe, Solltemperaturen) und **Einstellungen** (Parameter von HK1, HK2 und Wärmepumpe) sind in `dashboards/waermepumpe.yaml` enthalten, aber auskommentiert. Zum Aktivieren die Kommentarzeichen „# “ vor den jeweiligen Zeilen entfernen.
 
 ## Anlagenschema
 
@@ -31,6 +31,7 @@ Die Ansicht **Anlage** ist eine `picture-elements`-Karte. Sie zeigt die Hydrauli
 - **Warmwasserspeicher:** 400 Liter mit Wendel, Solltemperatur und TW1.
 - **Heizkreis 1 (Heizkörper, ungemischt):** Raum-Soll, Vorlauf Soll und Vorlauf Ist.
 - **Heizkreis 2 (Fußboden, gemischt):** Raumtemperatur, Luftfeuchte, Mischerstellung, Vorlauf Soll und Vorlauf Ist.
+- **HEMS-Leistungssteuerung:** Box mit PV-Überschuss (SG-Ready, Eingang 4 `boiler_hpin4`), PV max. Verdichterleistung (`boiler_pvmaxcomp`) und Peak-Modus (EVU-Sperre, Eingang 1 `boiler_hpin1`), per EMS-Bus mit der Inneneinheit verbunden.
 
 Animierte Leitungen zeigen, wo gerade Wasser fließt:
 
@@ -46,15 +47,16 @@ Das Schema passt sich dem hellen und dem dunklen Design an. Die Wertefelder wach
 ## Dateien
 
 ```
-dashboards/waermepumpe.yaml    Dashboard (YAML-Modus), alle sieben Ansichten
+dashboards/waermepumpe.yaml    Dashboard (YAML-Modus), alle Ansichten (zwei davon auskommentiert)
 packages/waermepumpe.yaml      Template-Sensoren: Betriebszustand (deutsch), COP aktuell/heute,
-                               JAZ, Spreizung, Stromkosten heute, Verdichter läuft, Abtauen
+                               JAZ, Spreizung, Heizleistung in W, Stromkosten heute,
+                               Verdichter läuft, Abtauen
 www/waermepumpe/schema.svg     Hintergrund des Anlagenschemas (viewBox 1800 × 1060)
 www/waermepumpe/flow-*.svg     animierte Fluss-Overlays (Primärkreis, Puffer, Warmwasser, HK1, HK2)
 www/waermepumpe/fan.svg        drehender Ventilator
 www/waermepumpe/defrost.svg    Abtau-Overlay
 examples/utility_meter.yaml    Tageszähler für Strom und Wärme (optional, siehe unten)
-docs/anlage.jpg                Screenshot
+docs/anlage.jpg                Screenshot (Stand vor HEMS-Box und Übersichts-Umbau)
 ```
 
 ## Voraussetzungen
@@ -110,7 +112,7 @@ docs/anlage.jpg                Screenshot
 - **Position der Wertefelder:** Sie sind in Prozent der Bildgröße angegeben. Für einen Punkt (x, y) im SVG mit viewBox 1800 × 1060 gilt `left = x / 18` und `top = y / 10.6`.
 - **Geänderte SVG-Dateien:** Erhöhe die Version in den Bild-URLs (`schema.svg?v=4` → `?v=5`), damit der Browser-Cache die neue Datei lädt.
 - **Andere Anlage:** Bei einem anderen Aufbau, etwa ohne Mischerkreis oder mit Reihenpuffer, passt du `schema.svg` und die Pfade in den `flow-*.svg` an. Die Overlays verwenden dieselben Koordinaten wie das Schema.
-- **Bewusst weggelassen:** Die Ansicht „Einstellungen“ enthält keine Reset-, Shutdown-, Schornsteinfeger- und manuelle Abtau-Schalter.
+- **Bewusst weggelassen:** Die (auskommentierte) Ansicht „Einstellungen“ enthält keine Reset-, Shutdown-, Schornsteinfeger- und manuelle Abtau-Schalter.
 
 ## Lizenz
 
